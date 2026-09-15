@@ -1,0 +1,8 @@
+# Audit exclusions for `tama find-violations`: generated output and paths
+# fixed by something outside this project.
+#
+# Xcode owns this file: it writes project.pbxproj whole whenever the example
+# project changes, at exactly this path inside the .xcodeproj bundle, and the
+# format has no include mechanism. A person never edits it by hand and it
+# cannot be split without ceasing to be an Xcode project.
+Example/Example.xcodeproj/project.pbxproj

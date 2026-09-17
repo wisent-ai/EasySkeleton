@@ -19,23 +19,34 @@ typealias ESColor = NSColor
 #endif
 
 extension Color {
+    /// The lighter and darker variants scale brightness by these factors.
+    private static let lighterFactor: CGFloat = 1.35
+    private static let darkerFactor: CGFloat = 0.9
+    /// ITU-R BT.601 luma weights, in thousandths, and the brightness a light color reaches.
+    private static let lumaRedWeight: CGFloat = 299
+    private static let lumaGreenWeight: CGFloat = 587
+    private static let lumaBlueWeight: CGFloat = 114
+    private static let lumaWeightTotal: CGFloat = 1000
+    private static let lightThreshold: CGFloat = 0.5
+    private static let rgbComponentCount = 3
+
     var complementaryColor: Color {
         isLight ? darker : lighter
     }
     
     var lighter: Color {
-        adjust(by: 1.35)
+        adjust(by: Self.lighterFactor)
     }
     
     var darker: Color {
-        adjust(by: 0.9)
+        adjust(by: Self.darkerFactor)
     }
     
     var isLight: Bool {
         guard let components = self.uiColor.cgColor.components,
-              components.count >= 3 else { return false }
-        let brightness = ((components[0] * 299) + (components[1] * 587) + (components[2] * 114)) / 1000
-        return !(brightness < 0.5)
+              components.count >= Self.rgbComponentCount else { return false }
+        let brightness = ((components[0] * Self.lumaRedWeight) + (components[1] * Self.lumaGreenWeight) + (components[2] * Self.lumaBlueWeight)) / Self.lumaWeightTotal
+        return !(brightness < Self.lightThreshold)
     }
     
     func adjust(by percent: CGFloat) -> Color {
@@ -58,6 +69,9 @@ extension Color {
 
 
 public extension Color {
+    /// The macOS skeleton gray, a touch cooler than neutral.
+    private static let skeletonGray = (red: 0.82, green: 0.82, blue: 0.84)
+
     static var skeleton: Color {
 #if os(iOS)
         return Color(.systemGray4)
@@ -66,7 +80,7 @@ public extension Color {
 #elseif os(watchOS)
         return Color.secondary
 #elseif os(macOS)
-        return Color(NSColor(red: 0.82, green: 0.82, blue: 0.84, alpha: 1))
+        return Color(NSColor(red: skeletonGray.red, green: skeletonGray.green, blue: skeletonGray.blue, alpha: 1))
 #else
         return Color(.tertiaryLabel)
 #endif

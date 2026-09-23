@@ -28,7 +28,7 @@ public struct SkeletonData: @unchecked Sendable {
     
     public fileprivate(set) var cornerRadius: CGFloat = 0
     public fileprivate(set) var cornerStyle: RoundedCornerStyle = .circular
-    public fileprivate(set) var customShape: AnyShape?
+    public fileprivate(set) var customShape: ErasedShape?
     
     public fileprivate(set) var skeletonWidth: CGFloat?
     public fileprivate(set) var skeletonHeight: CGFloat?
@@ -97,7 +97,7 @@ public extension View {
     /// - Parameter shape: New shape for skeleton. Set nil to return default skeleton.
     func skeletonShape<S: Shape>(_ shape: S?) -> some View {
         self.transformEnvironment(\.skeleton) { skeleton in
-            skeleton.customShape = shape.flatMap(AnyShape.init)
+            skeleton.customShape = shape.flatMap { ErasedShape($0) }
         }
     }
     
